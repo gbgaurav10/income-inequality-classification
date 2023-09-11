@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 __version__ = "0.0.0"
 REPO_NAME = "income-inequality-classification"
 AUTHOR_USER_NAME = "gbiamgaurav"
-SRC_REPO = "income_inequality
+SRC_REPO = "income_inequality"
 AUTHOR_EMAIL = "gaurav.bhattacharya10@gmail.com"
 
 
