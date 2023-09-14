@@ -27,4 +27,15 @@ class ModelTrainingConfig:
     n_estimators: int 
     max_depth: int 
     criterion: str
+    target_column: str
+
+
+@dataclass(frozen=True)
+class ModelEvaluationConfig:
+    root_dir: Path
+    test_data_path: Path 
+    model_path: Path
+    all_params: dict 
+    metric_file_name: Path 
     target_column: str 
+    model_name: Path 
