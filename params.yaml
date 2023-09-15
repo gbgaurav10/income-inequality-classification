@@ -1,5 +1,5 @@
 
 ExtraTreesClassifier:
-  n_estimators: 50
-  max_depth: 7
+  n_estimators: 250
+  max_depth: 10
   criterion: gini
