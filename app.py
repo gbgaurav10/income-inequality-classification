@@ -8,7 +8,7 @@ import pycountry
 warnings.filterwarnings('ignore')
 
 # Load the Model
-model = joblib.load("final_model/income_model.pkl")
+model = joblib.load("final_model/income_model.joblib")
 
 # Load the preprocessor
 preprocessor = joblib.load("final_model/preprocessor.joblib")
@@ -25,7 +25,7 @@ def main():
     all_countries = list(pycountry.countries)
     # Extract country names from the country objects
     country_names = [country.name for country in all_countries]
-    selected_country = st.selectbox("Select a Country", country_names, index=0)
+    country_of_birth_father = st.selectbox("Select a Country", country_names, index=0)
 
     # Define form inputs and initial values
     age = st.slider("Age", 0, 92, step=1)
@@ -65,35 +65,45 @@ def main():
 
         # If submit button is clicked
         if submit_button:
-            # Create a DataFrame with the selected features
-            input_data = pd.DataFrame({
-                "age": [age],
-                "selected_country": [selected_country],
-                "citizenship": [citizenship],
-                "gender": [gender],
-                "tax status": [tax_status],
-                "employment stat": [employment_stat],
-                "industry_code": [industry_code],
-                "wage_per_hour": [wage_per_hour],
-                "mig_year": [mig_year],
-                "stocks_status": [stocks_status]
-            })
+            try:
+                # Create a DataFrame with the selected features
+                input_data = pd.DataFrame({
+                    "age": [age],
+                    "country_of_birth_father": [country_of_birth_father],
+                    "citizenship": [citizenship],
+                    "gender": [gender],
+                    "tax_status": [tax_status],
+                    "employment_stat": [employment_stat],
+                    "industry_code": [industry_code],
+                    "wage_per_hour": [wage_per_hour],
+                    "mig_year": [mig_year],
+                    "stocks_status": [stocks_status]
+                })
 
-            # Encode the categorical variables if required
-            categorical_cols = input_data.select_dtypes(include=["object"]).columns
-            for col in categorical_cols:
-                input_data[col] = input_data[col].astype("category").cat.codes
+                # Ensure correct data types for the input features
+                input_data = input_data.astype({
+                    "age": int,
+                    "employment_stat": int,
+                    "industry_code": int,
+                    "wage_per_hour": float,
+                    "mig_year": int,
+                    "stocks_status": float
+                })
 
-            # Make the prediction
-            prediction = model.predict(input_data)
+                # Make the prediction
+                X_transformed = preprocessor.transform(input_data)
+                prediction = model.predict(X_transformed)
 
-            # Map the prediction to human-readable labels
-            income_mapping = {0: "Below Limit", 1: "Above Limit"}
-            predicted_income_limit = income_mapping.get(prediction[0], "Unknown")
+                # Map the prediction to human-readable labels
+                income_mapping = {0: "Below Limit", 1: "Above Limit"}
+                predicted_income_limit = income_mapping.get(prediction[0], "Unknown")
 
-            # Show the prediction
-            st.subheader("Prediction:")
-            st.write("The predicted income limit of the individual is:", predicted_income_limit)
+                # Show the prediction
+                st.subheader("Prediction:")
+                st.write("The predicted limit is:", predicted_income_limit)
+
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
 
 # Run the main function
 if __name__ == "__main__":
