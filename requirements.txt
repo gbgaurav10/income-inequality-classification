@@ -29,5 +29,6 @@ Flask
 Flask-Cors
 python-box
 mlflow
+pycountry
 
 -e .
